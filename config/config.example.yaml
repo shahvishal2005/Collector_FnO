@@ -1,0 +1,36 @@
+# Collector configuration. Copy to config/config.yaml and adjust.
+# Every threshold lives here; unknown keys are rejected at start-up.
+
+paths:
+  data_root: data                  # bronze / silver / manifests / reports live under here
+  logs_root: logs
+  # Read-only: the research platform's clean 1-minute candles, used ONLY to learn which days
+  # the market was open (Nifty 50). Leave empty to use weekdays only.
+  nifty_candles_root: "E:/Indian Market/Fyers_ORB_Agent/data/clean/1m/NSE_NIFTY50-INDEX"
+
+nse:
+  archive_base_url: "https://nsearchives.nseindia.com"
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+  min_interval_seconds: 1.5        # polite gap between requests (single connection)
+  timeout_seconds: 60
+  max_attempts: 4                  # per request, for network errors and 5xx / 429
+  backoff_base_seconds: 3.0
+  backoff_max_seconds: 60.0
+  abort_after_consecutive_errors: 8   # stop the run instead of hammering a blocking server
+
+fo_bhavcopy:
+  # Dates >= new_format_start use only the new (UDiFF) file; dates before overlap_start use only
+  # the old file. Between overlap_start and new_format_start both are downloaded and compared.
+  overlap_start: 2024-07-03
+  new_format_start: 2024-07-08
+
+universe:
+  window_days: 60                  # trading days of stored data used to rank stock-option activity
+  tier2_size: 40                   # how many stocks to propose for Tier 2 live capture
+  min_day_share: 0.8               # a stock must have option rows on at least this share of the window
+
+backfill:
+  start_date: 2017-10-24           # first day of the platform's candle data
+  end_date: null                   # null = yesterday (IST)
+  min_expected_underlyings: 150    # a day with fewer underlyings is flagged
+  row_count_change_ratio: 0.5      # flag a day whose row count differs from the median of the last 20 days by more than this

@@ -1,0 +1,24 @@
+# Secrets and tokens: never commit
+.env
+access_token.txt
+*.token
+
+# Collected data and logs (large, re-creatable or backed up separately)
+data/
+logs/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local config (copy from config/config.example.yaml)
+config/config.yaml
+
+# Tools
+graft/
+.claude/
