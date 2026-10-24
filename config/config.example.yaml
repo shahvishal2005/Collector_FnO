@@ -12,7 +12,8 @@ nse:
   archive_base_url: "https://nsearchives.nseindia.com"
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
   min_interval_seconds: 1.5        # polite gap between requests (single connection)
-  timeout_seconds: 60
+  timeout_seconds: 60              # wait for the next bytes
+  total_timeout_seconds: 120       # hard limit for one whole download (a stalled file is retried)
   max_attempts: 4                  # per request, for network errors and 5xx / 429
   backoff_base_seconds: 3.0
   backoff_max_seconds: 60.0
@@ -46,5 +47,5 @@ universe:
 backfill:
   start_date: 2017-10-24           # first day of the platform's candle data
   end_date: null                   # null = yesterday (IST)
-  min_expected_underlyings: 150    # a day with fewer underlyings is flagged
+  min_expected_underlyings: 100    # floor for a truncated file (real universe: 138 to 232)
   row_count_change_ratio: 0.5      # flag a day whose row count differs from the median of the last 20 days by more than this

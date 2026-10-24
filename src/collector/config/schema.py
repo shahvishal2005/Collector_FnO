@@ -31,6 +31,7 @@ class NseConfig(_Strict):
     user_agent: str
     min_interval_seconds: float = Field(ge=0.0)
     timeout_seconds: float = Field(gt=0.0)
+    total_timeout_seconds: float = Field(gt=0.0)
     max_attempts: int = Field(ge=1)
     backoff_base_seconds: float = Field(ge=0.0)
     backoff_max_seconds: float = Field(ge=0.0)

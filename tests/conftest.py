@@ -33,6 +33,7 @@ def make_config(tmp_path: Path, **overrides: object) -> AppConfig:
             "user_agent": "test-agent",
             "min_interval_seconds": 0.0,
             "timeout_seconds": 5.0,
+            "total_timeout_seconds": 30.0,
             "max_attempts": 2,
             "backoff_base_seconds": 0.0,
             "backoff_max_seconds": 0.0,

@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterator
 from datetime import date
 from pathlib import Path
 
@@ -44,9 +45,23 @@ def test_format_selection(cfg: AppConfig) -> None:
 class FakeResponse:
     """Just enough of requests.Response."""
 
-    def __init__(self, status_code: int, content: bytes = b"") -> None:
+    def __init__(
+        self, status_code: int, content: bytes = b"", on_chunk: Callable[[], None] | None = None
+    ) -> None:
         self.status_code = status_code
         self.content = content
+        self.closed = False
+        self._on_chunk = on_chunk
+
+    def iter_content(self, chunk_size: int) -> Iterator[bytes]:
+        """Yield the body in 10-byte pieces; `on_chunk` lets a test make time pass."""
+        for start in range(0, len(self.content), 10):
+            if self._on_chunk:
+                self._on_chunk()
+            yield self.content[start : start + 10]
+
+    def close(self) -> None:
+        self.closed = True
 
 
 class FakeSession:
@@ -57,7 +72,7 @@ class FakeSession:
         self.headers: dict[str, str] = {}
         self.calls: list[str] = []
 
-    def get(self, url: str, timeout: float) -> FakeResponse:
+    def get(self, url: str, timeout: float, stream: bool = False) -> FakeResponse:
         self.calls.append(url)
         item = self.script.pop(0)
         if isinstance(item, Exception):
@@ -106,3 +121,23 @@ def test_unexpected_status_raises(tmp_path: Path) -> None:
     client, _ = _client(tmp_path, [FakeResponse(401)])
     with pytest.raises(NseError):
         client.fetch_zip("u")
+
+
+def test_a_stalled_download_is_cut_off_and_retried(tmp_path: Path) -> None:
+    """A response that keeps trickling in past the total time limit is abandoned, then retried."""
+    body = make_zip("old_20171101.csv")
+    now = [0.0]
+
+    def slow() -> None:
+        now[0] += 10.0  # every piece takes 10 s; the test config allows 30 s in total
+
+    slow_response = FakeResponse(200, body, on_chunk=slow)
+    good = FakeResponse(200, body)
+    cfg = make_config(tmp_path)
+    session = FakeSession([slow_response, good])
+    client = NseClient(
+        cfg.nse, session=session, limiter=RateLimiter(0.0), clock=lambda: now[0]  # type: ignore[arg-type]
+    )
+    result = client.fetch_zip("u")
+    assert result.status is FetchStatus.OK and result.content == body
+    assert slow_response.closed and len(session.calls) == 2

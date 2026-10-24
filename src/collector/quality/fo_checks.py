@@ -68,10 +68,17 @@ def check_day(frame: pd.DataFrame, expected: date, min_underlyings: int) -> list
         traded & zero_ohlc,
         "traded but open/high/low are 0 (NSE quirk, e.g. spread trades): use close/settle",
     )
+    is_settlement = frame["close"] == frame["settle_price"]
+    add(
+        "SETTLEMENT_CLOSE_OUTSIDE_RANGE",
+        INFO,
+        traded & outside & ~zero_ohlc & is_settlement,
+        "close equals the settlement price and lies outside [low, high] (NSE quirk, thin futures)",
+    )
     add(
         "CLOSE_OUTSIDE_RANGE",
         WARN,
-        traded & outside & ~zero_ohlc,
+        traded & outside & ~zero_ohlc & ~is_settlement,
         "close outside [low, high] on a traded contract",
     )
 

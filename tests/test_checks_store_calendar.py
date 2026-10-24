@@ -62,6 +62,20 @@ def test_each_defect_is_detected() -> None:
     assert _checks(frame.iloc[0:0]) == {"EMPTY_DAY"}
 
 
+def test_close_outside_range_is_info_for_settlement_and_warn_otherwise() -> None:
+    frame = _frame()
+    row = frame[frame.instrument_type == "FUTSTK"].index[0]
+    frame.loc[row, ["volume_contracts", "open", "high", "low", "close", "settle_price"]] = [
+        3, 100.0, 101.0, 99.0, 105.0, 105.0,
+    ]  # fmt: skip
+    found = {i.check: i.severity for i in check_day(frame, DAY, 3)}
+    assert found["SETTLEMENT_CLOSE_OUTSIDE_RANGE"] == "info"
+    assert "CLOSE_OUTSIDE_RANGE" not in found
+    frame.loc[row, "settle_price"] = 104.0
+    found = {i.check: i.severity for i in check_day(frame, DAY, 3)}
+    assert found["CLOSE_OUTSIDE_RANGE"] == "warn"
+
+
 def test_row_count_jump_detection() -> None:
     counts = {date(2024, 1, d): 1000 for d in range(1, 11)}
     counts[date(2024, 1, 11)] = 100

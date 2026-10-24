@@ -10,4 +10,7 @@
   latest stored days (config section `universe`).
 - Fyers login ported from the research platform (TOTP login, token store, secrets loader) with its
   tests; day-0 read-only probe (`scripts/probe_fyers.py`) and its findings (`docs/PROBE_FINDINGS.md`).
+- Full F&O backfill completed 2026-10-24 (2,225 days, 0 errors; see `docs/BACKFILL_RESULT.md`).
+- Downloads now have a total time limit (`nse.total_timeout_seconds`); stalled files are retried.
+- Quality checks tuned from real data: universe floor 100; settlement-close quirk reported as info.
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

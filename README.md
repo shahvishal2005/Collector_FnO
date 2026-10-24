@@ -2,7 +2,7 @@
 
 Market-data collector for Indian F&O. Personal research use.
 
-- **Pipeline A (built): NSE archive backfill.** Downloads the exchange's public end-of-day F&O
+- **Pipeline A (built and run): NSE archive backfill.** 2,225 trading days, 2017-10-24 to 2026-10-23. Downloads the exchange's public end-of-day F&O
   files (futures and options on indices and stocks, with open interest), keeps the raw files,
   and writes clean, versioned Parquet tables with a manifest and a quality report.
 - **Pipeline B (designed, not built): live Fyers capture.** Option-chain, OI and futures snapshots

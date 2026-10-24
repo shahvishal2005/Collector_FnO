@@ -42,6 +42,11 @@ To convert open interest to lots: `open_interest_qty / lot_size` (needs a lot si
 - **Zero OHLC with volume.** Some far-month contracts that traded (often as spread trades) show
   open/high/low = 0.00 while close and settle are valid. Use close/settle; check name
   `ZERO_OHLC_WITH_VOLUME` (info).
+- **Close equals settlement on thin futures.** For thinly traded stock futures NSE's `close` is
+  the settlement price and can lie outside the day's low/high (2,004 rows over the full history;
+  check `SETTLEMENT_CLOSE_OUTSIDE_RANGE`, info).
+- **Universe size changes.** The number of F&O underlyings per day ranged from 138 (2020) to 232.
+- **Known source gap.** NSE has no file for 2021-03-30 (see `BACKFILL_RESULT.md`).
 - **No-volume rows.** Contracts that did not trade still appear, with prices at zero or at the
   settlement price. Filter `volume_contracts > 0` for traded prices.
 - **Unadjusted prices.** Strikes and prices are not adjusted for splits, bonuses or other
