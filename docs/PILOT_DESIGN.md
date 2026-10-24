@@ -1,6 +1,7 @@
 # Live capture pilot: design (not yet built)
 
-Status: design for milestone M5. Runs on the **laptop** for 3 to 5 trading days. The production
+Status: design for milestone M5. **Day-0 probe done on 2026-10-24: see `PROBE_FINDINGS.md`**
+for answers to most of the questions below (the rest need a trading-hours run). Runs on the **laptop** for 3 to 5 trading days. The production
 collector (M6) runs on the VPS with the same code, different config.
 
 ## Goal

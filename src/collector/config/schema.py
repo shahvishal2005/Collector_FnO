@@ -68,6 +68,45 @@ class UniverseConfig(_Strict):
     min_day_share: float = Field(default=0.8, gt=0.0, le=1.0)
 
 
+class Tier1Underlying(_Strict):
+    """One index whose option chain is captured at the highest frequency."""
+
+    name: str
+    spot_symbol: str
+
+
+def _default_tier1() -> list[Tier1Underlying]:
+    """Nifty 50, Bank Nifty, Fin Nifty, Midcap Nifty and Sensex (owner's choice, 2026-10-24)."""
+    return [
+        Tier1Underlying(name="NIFTY", spot_symbol="NSE:NIFTY50-INDEX"),
+        Tier1Underlying(name="BANKNIFTY", spot_symbol="NSE:NIFTYBANK-INDEX"),
+        Tier1Underlying(name="FINNIFTY", spot_symbol="NSE:FINNIFTY-INDEX"),
+        Tier1Underlying(name="MIDCPNIFTY", spot_symbol="NSE:MIDCPNIFTY-INDEX"),
+        Tier1Underlying(name="SENSEX", spot_symbol="BSE:SENSEX-INDEX"),
+    ]
+
+
+def _default_symbol_masters() -> dict[str, str]:
+    """Fyers' public symbol master files (contract lists with lot sizes)."""
+    return {
+        "NSE_FO": "https://public.fyers.in/sym_details/NSE_FO.csv",
+        "BSE_FO": "https://public.fyers.in/sym_details/BSE_FO.csv",
+    }
+
+
+class LiveConfig(_Strict):
+    """Settings for the Fyers live capture and its day-0 probe (read-only market data only)."""
+
+    tier1: list[Tier1Underlying] = Field(default_factory=_default_tier1)
+    token_path: Path = Path("access_token.txt")
+    sdk_log_dir: Path = Path("logs/fyers_sdk")
+    symbol_master_urls: dict[str, str] = Field(default_factory=_default_symbol_masters)
+    probe_strike_counts: list[int] = Field(default_factory=lambda: [3, 50])
+    probe_latency_calls: int = Field(default=10, ge=1)
+    probe_call_gap_seconds: float = Field(default=0.4, ge=0.0)
+    probe_history_days: int = Field(default=3, ge=1)
+
+
 class AppConfig(_Strict):
     """The whole configuration."""
 
@@ -76,3 +115,4 @@ class AppConfig(_Strict):
     fo_bhavcopy: FoBhavcopyConfig
     backfill: BackfillConfig
     universe: UniverseConfig = UniverseConfig()
+    live: LiveConfig = Field(default_factory=LiveConfig)

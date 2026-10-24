@@ -18,6 +18,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+live = [
+    "fyers-apiv3>=3.1",
+    "pyotp>=2.9",
+    "python-dotenv>=1.0",
+]
 dev = [
     "pytest>=8.0",
     "ruff",
@@ -56,5 +61,5 @@ plugins = ["pydantic.mypy"]
 files = ["src", "scripts"]
 
 [[tool.mypy.overrides]]
-module = ["pyarrow.*"]
+module = ["pyarrow.*", "fyers_apiv3.*"]
 ignore_missing_imports = true

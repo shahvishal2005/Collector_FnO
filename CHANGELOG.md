@@ -8,4 +8,6 @@
   against the Nifty trading days, old/new format overlap comparison, report generation.
 - Tier 2 proposal: `scripts/derive_tier2.py` ranks stock options by premium turnover over the
   latest stored days (config section `universe`).
+- Fyers login ported from the research platform (TOTP login, token store, secrets loader) with its
+  tests; day-0 read-only probe (`scripts/probe_fyers.py`) and its findings (`docs/PROBE_FINDINGS.md`).
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

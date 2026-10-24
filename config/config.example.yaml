@@ -24,6 +24,20 @@ fo_bhavcopy:
   overlap_start: 2024-07-03
   new_format_start: 2024-07-08
 
+live:                              # Fyers market-data capture (read-only; never orders)
+  token_path: access_token.txt     # daily Fyers token (git-ignored)
+  sdk_log_dir: logs/fyers_sdk
+  tier1:                           # indices captured most often
+    - {name: NIFTY, spot_symbol: "NSE:NIFTY50-INDEX"}
+    - {name: BANKNIFTY, spot_symbol: "NSE:NIFTYBANK-INDEX"}
+    - {name: FINNIFTY, spot_symbol: "NSE:FINNIFTY-INDEX"}
+    - {name: MIDCPNIFTY, spot_symbol: "NSE:MIDCPNIFTY-INDEX"}
+    - {name: SENSEX, spot_symbol: "BSE:SENSEX-INDEX"}
+  probe_strike_counts: [3, 50]     # option-chain sizes tried on day 0
+  probe_latency_calls: 10          # sequential calls used to measure latency
+  probe_call_gap_seconds: 0.4      # pause between probe calls (polite)
+  probe_history_days: 3            # trading days of contract candles requested
+
 universe:
   window_days: 60                  # trading days of stored data used to rank stock-option activity
   tier2_size: 40                   # how many stocks to propose for Tier 2 live capture
