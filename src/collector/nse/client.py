@@ -73,16 +73,24 @@ class NseClient:
         self._clock = clock
 
     def fetch_zip(self, url: str) -> FetchResult:
-        """Download one URL with retries; return OK, NOT_FOUND, or raise NseError."""
+        """Download one zip file with retries; return OK, NOT_FOUND, or raise NseError."""
+        return self.fetch_file(url, "zip")
+
+    def fetch_file(self, url: str, kind: str = "zip") -> FetchResult:
+        """Download one file (`kind` is 'zip' or 'text') with retries.
+
+        A 200 answer whose body is not what `kind` promises (not a zip, or an HTML page) raises
+        UnexpectedContent: it is a block or error page, never mistaken for a holiday.
+        """
         return retry_call(
-            lambda: self._once(url),
+            lambda: self._once(url, kind),
             attempts=self._cfg.max_attempts,
             base_delay=self._cfg.backoff_base_seconds,
             max_delay=self._cfg.backoff_max_seconds,
             retry_on=(_Retryable,),
         )
 
-    def _once(self, url: str) -> FetchResult:
+    def _once(self, url: str, kind: str) -> FetchResult:
         """One request. Maps the response to a result or an exception.
 
         The body is read in chunks with a total time limit, because the per-read timeout alone lets
@@ -113,6 +121,15 @@ class NseClient:
         except requests.RequestException as exc:
             raise _Retryable(f"network error for {url}: {exc}") from exc
         body = b"".join(chunks)
-        if not body.startswith(_ZIP_MAGIC):
-            raise UnexpectedContent(f"HTTP 200 but not a zip file for {url} ({len(body)} bytes)")
+        if kind == "zip":
+            if not body.startswith(_ZIP_MAGIC):
+                raise UnexpectedContent(
+                    f"HTTP 200 but not a zip file for {url} ({len(body)} bytes)"
+                )
+        else:
+            head = body.lstrip()[:15].lower()
+            if not body.strip() or head.startswith((b"<!doctype", b"<html")):
+                raise UnexpectedContent(
+                    f"HTTP 200 but empty or an HTML page for {url} ({len(body)} bytes)"
+                )
         return FetchResult(FetchStatus.OK, code, body)

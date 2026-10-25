@@ -56,10 +56,39 @@ To convert open interest to lots: `open_interest_qty / lot_size` (needs a lot si
 - **Survivorship.** Each day's file lists the F&O universe of that day, so the historical F&O
   universe can be reconstructed from the data. It is not adjusted for symbol changes.
 
+## M3 tables (one Parquet file per trade day under `data\silver\<name>\trade_date=DATE\`)
+
+All four are plain CSV files from the NSE archive (holidays answer 404). Their layouts were
+identical across 2017-2026 in the samples checked.
+
+### participant_oi and participant_volume (same layout)
+Participant-wise open interest / trading volume in contracts, made tidy: one row per client type and category.
+
+| Column | Meaning |
+|---|---|
+| trade_date | date |
+| client_type | `Client`, `DII`, `FII`, `Pro`, `TOTAL` |
+| category | `FUTIDX`, `FUTSTK`, `OPTIDX_CE`, `OPTIDX_PE`, `OPTSTK_CE`, `OPTSTK_PE`, `TOTAL` |
+| long_contracts, short_contracts | contracts (not units) |
+| source_file, ingested_at, schema_version | lineage |
+
+35 rows a day. Integrity: the four participants add up to `TOTAL` within 2 contracts (NSE rounds each
+row: on 2026-10-23 the sums were off by exactly 1), and TOTAL long equals TOTAL short.
+
+### fo_ban
+`trade_date, position, symbol` plus lineage: the stocks in the F&O ban period that day (open interest
+above 95% of the market-wide position limit). **A day with nobody banned is an empty table**, so
+"no ban" is different from "no file". Historical ban lists exist back to at least 2017.
+
+### index_close
+End-of-day values of every NSE index (74 in 2017, 167 in 2026): `index_name, open, high, low, close,
+points_change, change_pct, volume, turnover_cr, pe, pb, div_yield`. Many indices have no volume or
+P/E (nulls). Volume is in units; turnover in Rs crore.
+
 ## Other tables (planned)
-Participant-wise OI and volume, F&O ban lists, index close, equity bhavcopy with delivery
-quantity, contract master and expiry calendar, live option-chain snapshots. See
-`plan_details/COLLECTOR_PLAN.md` section 6.
+Equity bhavcopy with delivery quantity (M4), expiry calendar, contract candles (M7). See
+`plan_details/COLLECTOR_PLAN.md` section 6. Live tables (option chain, health, contract master) are
+described in `VPS_LIVE.md`.
 
 ## Catalogue (`data/bronze/catalogue.sqlite`, table `raw_files`)
 One row per (dataset, trade_date, format): status `ok` or `not_found`, URL, HTTP status, fetch

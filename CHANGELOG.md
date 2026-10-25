@@ -19,4 +19,7 @@
 - Live scheduler hardening after the first VPS test: 10-minute holiday check (`market_check_slots`),
   day-complete marker, contract lists downloaded once a day, 5-minute relaunch in Task Scheduler,
   status verdict judged against the run's own span (late start, stall and early stop are reported).
+- M3 daily datasets: participant OI and volume, F&O ban list, index close (generic backfill job,
+  parsers, checks, manifests, reports; `scripts/backfill_daily.py`). The download client accepts
+  plain-text files. Checks tuned on real data (participant sums within 2 contracts).
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

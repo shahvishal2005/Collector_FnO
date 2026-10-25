@@ -95,3 +95,16 @@ class Layout:
             self.root / "bronze" / "fyers_symbol_master" / f"trade_date={day.isoformat()}"
             / f"{label}.csv.gz"
         )  # fmt: skip
+
+    # ---- generic daily datasets (participant, ban list, index close, ...) ----
+    def dataset_silver_root(self, name: str) -> Path:
+        """Folder holding the daily partitions of a dataset."""
+        return self.root / "silver" / name
+
+    def dataset_silver_file(self, name: str, day: date) -> Path:
+        """The parquet file of one dataset and trade day."""
+        return self.dataset_silver_root(name) / f"trade_date={day.isoformat()}" / "part-0.parquet"
+
+    def dataset_manifest_path(self, name: str) -> Path:
+        """The manifest CSV of a dataset."""
+        return self.manifests_root / f"{name}_manifest.csv"

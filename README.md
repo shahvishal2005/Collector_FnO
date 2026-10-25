@@ -35,7 +35,9 @@ brand-new package builds.)
 | Retry days NSE said "not found" | `python scripts\backfill_fo.py --recheck-missing` |
 | Rebuild the clean tables from the raw files (no network) | `python scripts\backfill_fo.py --reprocess` |
 | Rebuild manifest and report only | `python scripts\report_fo.py` |
-| Prove the data matches its manifest | `python scripts\check_manifest.py` |
+| Prove the F&O data matches its manifest | `python scripts\check_manifest.py` |
+| Backfill participant OI/volume, ban lists, index closes (M3) | `python scripts\backfill_daily.py --dataset all` |
+| Check every dataset against its manifest | `python scripts\check_manifest.py --dataset all` |
 | Live capture for today (VPS; started by Task Scheduler) | `python scripts\run_live.py` |
 | Check how the live capture is doing | `python scripts\live_status.py` |
 | Propose the Tier 2 stock list from stored option data | `python scripts\derive_tier2.py` |

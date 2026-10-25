@@ -141,3 +141,17 @@ def test_a_stalled_download_is_cut_off_and_retried(tmp_path: Path) -> None:
     result = client.fetch_zip("u")
     assert result.status is FetchStatus.OK and result.content == body
     assert slow_response.closed and len(session.calls) == 2
+
+
+def test_text_files_are_accepted_and_html_pages_are_not(tmp_path: Path) -> None:
+    csv_body = b"Client Type,Future Index Long\nClient,1\n"
+    client, _ = _client(tmp_path, [FakeResponse(200, csv_body)])
+    result = client.fetch_file("u", "text")
+    assert result.status is FetchStatus.OK and result.content == csv_body
+    for bad in (b"<!DOCTYPE html><html>blocked</html>", b"  <html>x</html>", b"   "):
+        client, _ = _client(tmp_path, [FakeResponse(200, bad)])
+        with pytest.raises(UnexpectedContent):
+            client.fetch_file("u", "text")
+    zipped, _ = _client(tmp_path, [FakeResponse(200, csv_body)])
+    with pytest.raises(UnexpectedContent):  # a text body is not a valid zip
+        zipped.fetch_file("u", "zip")
