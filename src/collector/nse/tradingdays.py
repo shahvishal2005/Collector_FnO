@@ -40,6 +40,21 @@ def trading_days_from_candles(root: Path) -> frozenset[date]:
     return frozenset(days)
 
 
+def calendar_with_fallback(
+    start: date, end: date, candles_root: Path | None, fallback_days: frozenset[date]
+) -> TradingCalendar:
+    """Like build_calendar, but when no candle folder is available (for example on the VPS) the
+    given days (the dates that have F&O files) are used as the known trading days."""
+    calendar = build_calendar(start, end, candles_root)
+    if calendar.known_trading_days is not None or not fallback_days:
+        return calendar
+    known = frozenset(d for d in fallback_days if d <= end)
+    extra = [d for d in known if start <= d <= end and d.weekday() >= 5]
+    return TradingCalendar(
+        sorted(set(calendar.candidates) | set(extra)), known, max(known) if known else None
+    )
+
+
 def build_calendar(start: date, end: date, candles_root: Path | None) -> TradingCalendar:
     """Candidate days between start and end (inclusive), enriched with candle knowledge."""
     known: frozenset[date] | None = None

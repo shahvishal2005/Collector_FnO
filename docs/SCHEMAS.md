@@ -69,7 +69,7 @@ Participant-wise open interest / trading volume in contracts, made tidy: one row
 | trade_date | date |
 | client_type | `Client`, `DII`, `FII`, `Pro`, `TOTAL` |
 | category | `FUTIDX`, `FUTSTK`, `OPTIDX_CE`, `OPTIDX_PE`, `OPTSTK_CE`, `OPTSTK_PE`, `TOTAL` |
-| long_contracts, short_contracts | contracts (not units) |
+| long_contracts, short_contracts | contracts (not units); **float64**, because some days carry fractional counts such as 787007.6667 (seen 2017-11-24 and 2017-12-06; kept exactly, reported as info `FRACTIONAL_CONTRACTS`) |
 | source_file, ingested_at, schema_version | lineage |
 
 35 rows a day. Integrity: the four participants add up to `TOTAL` within 2 contracts (NSE rounds each

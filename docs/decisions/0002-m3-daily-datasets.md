@@ -26,3 +26,14 @@ Datasets: participant-wise open interest, participant-wise volume, F&O ban list,
 - Participant file title has odd doubled quotes in recent years, so the date is read from the raw
   first line, not through the CSV parser.
 - Index-close rows: 74 (2017-10-24), 118 (2024-07), 167 (2026-10-23).
+
+## Update 2026-10-25: first VPS run found two real quirks
+- **Fractional participant counts.** The participant files for 2017-11-24 and 2017-12-06 contain
+  non-whole numbers (e.g. 787007.6667, 1321970.667: thirds). The parser first required whole numbers
+  and those days failed. Decision: store counts as float64 and keep them exactly; report the number
+  of fractional cells as info. The raw files were already saved, so the failed days are filled by
+  re-reading bronze (no download). Because the column type changed from int64 to float64, both
+  participant datasets must be re-processed once (`--reprocess`) so every day has the same type.
+- **Coverage without candles.** The VPS has no Nifty candle folder, so coverage could not be judged
+  there. `calendar_with_fallback` now uses the dates that have F&O files as the known trading days
+  (and asks for weekend special sessions that have F&O files).

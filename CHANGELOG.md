@@ -24,4 +24,6 @@
   plain-text files. Checks tuned on real data (participant sums within 2 contracts).
 - Claude Code commands for the VPS (`.claude/commands/vps-update.md`, `vps-status.md`) and a config
   drift check (`scripts/check_config.py`).
+- Participant files with fractional contract counts are stored exactly (float64); coverage falls back
+  to the F&O trading days when no candle folder exists (VPS).
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

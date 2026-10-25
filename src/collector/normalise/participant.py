@@ -6,6 +6,9 @@ File layout (identical across 2017-2026): a title line carrying the date, a head
 row per participant type (Client, DII, FII, Pro) and a TOTAL row. Each row has long and short
 contracts for index futures, stock futures, index calls/puts and stock calls/puts, plus totals.
 The table is made 'tidy': one row per (client type, category).
+
+Some days (seen on 2017-11-24 and 2017-12-06) carry FRACTIONAL contract counts such as 787007.6667
+(thirds). They are in the source, so they are stored exactly (float64) and never rounded.
 """
 
 from __future__ import annotations
@@ -37,8 +40,8 @@ PARTICIPANT_SCHEMA = pa.schema(
         ("trade_date", pa.date32()),
         ("client_type", pa.string()),
         ("category", pa.string()),
-        ("long_contracts", pa.int64()),
-        ("short_contracts", pa.int64()),
+        ("long_contracts", pa.float64()),
+        ("short_contracts", pa.float64()),
         ("source_file", pa.string()),
         ("ingested_at", pa.timestamp("us", tz="Asia/Kolkata")),
         ("schema_version", pa.int32()),
@@ -62,12 +65,12 @@ def _title_date(line: str) -> date:
     return date(int(match[3]), _MONTHS[match[1].upper()], int(match[2]))
 
 
-def _whole(text: str) -> int:
-    """A whole number with optional thousands separators."""
+def _count(text: str) -> float:
+    """A contract count (usually whole, sometimes fractional) with optional thousands separators."""
     try:
-        return int(text.replace(",", "").strip())
+        return float(text.replace(",", "").strip())
     except ValueError:
-        raise ParseError(f"not a whole number: {text!r}") from None
+        raise ParseError(f"not a number: {text!r}") from None
 
 
 def parse_participant(
@@ -107,8 +110,8 @@ def parse_participant(
                     "trade_date": expected,
                     "client_type": client,
                     "category": category,
-                    "long_contracts": _whole(row[position[long_name]]),
-                    "short_contracts": _whole(row[position[short_name]]),
+                    "long_contracts": _count(row[position[long_name]]),
+                    "short_contracts": _count(row[position[short_name]]),
                 }
             )
     if seen != CLIENT_TYPES:

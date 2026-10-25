@@ -288,3 +288,46 @@ def test_registry_urls_and_file_names() -> None:
         .endswith("/content/indices/ind_close_all_23102026.csv")
     )
     assert all(d.kind == "text" for d in DATASETS.values())
+
+
+def test_fractional_contract_counts_are_kept_exactly() -> None:
+    """On 2017-11-24 and 2017-12-06 NSE published counts such as 787007.6667 (thirds)."""
+    day = date(2017, 11, 24)
+    frame = parse_participant(_read("participant_oi_20171124_fractional.csv"), day, "f", NOW)
+    client = frame[(frame["client_type"] == "Client") & (frame["category"] == "OPTIDX_PE")].iloc[0]
+    assert client["long_contracts"] == 787007.6667 and client["short_contracts"] == 960374.3333
+    total = frame[(frame["client_type"] == "TOTAL") & (frame["category"] == "TOTAL")].iloc[0]
+    assert total["long_contracts"] == 5610638 and str(frame["long_contracts"].dtype) == "float64"
+    found = {i.check: i for i in check_participant(frame, day)}
+    assert (
+        found["FRACTIONAL_CONTRACTS"].severity == "info" and found["FRACTIONAL_CONTRACTS"].count > 0
+    )
+    assert "PARTICIPANTS_DO_NOT_ADD_UP" not in found  # the fractions still add up to TOTAL
+    other = parse_participant(
+        _read("participant_oi_20171206_fractional.csv"), date(2017, 12, 6), "f", NOW
+    )
+    assert not [i for i in check_participant(other, date(2017, 12, 6)) if i.severity == "error"]
+
+
+def test_calendar_falls_back_to_the_days_that_have_fo_files() -> None:
+    from collector.nse.tradingdays import calendar_with_fallback
+
+    fo_days = frozenset(
+        {date(2024, 11, 1), date(2024, 11, 4), date(2024, 11, 5)}
+    )  # 1 Nov = Muhurat Friday
+    cal = calendar_with_fallback(date(2024, 11, 1), date(2024, 11, 8), None, fo_days)
+    assert cal.known_trading_days == fo_days and cal.known_until == date(2024, 11, 5)
+    assert date(2024, 11, 2) not in cal.candidates  # a plain Saturday is still not asked for
+    weekend = calendar_with_fallback(
+        date(2024, 3, 1),
+        date(2024, 3, 8),
+        None,
+        frozenset({date(2024, 3, 2)}),  # a special Saturday session
+    )
+    assert date(2024, 3, 2) in weekend.candidates
+    assert (
+        calendar_with_fallback(
+            date(2024, 11, 1), date(2024, 11, 8), None, frozenset()
+        ).known_trading_days
+        is None
+    )

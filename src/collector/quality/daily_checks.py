@@ -8,7 +8,7 @@ from datetime import date
 
 import pandas as pd
 
-from collector.quality.fo_checks import ERROR, WARN, Issue
+from collector.quality.fo_checks import ERROR, INFO, WARN, Issue
 
 _PARTICIPANTS = ["Client", "DII", "FII", "Pro"]
 _RANGE_TOLERANCE = 1e-9
@@ -30,6 +30,19 @@ def check_participant(frame: pd.DataFrame, day: date) -> list[Issue]:
         negative = int((frame[column] < 0).sum())
         if negative:
             issues.append(Issue(day, f"NEGATIVE_{column.upper()}", ERROR, negative, "below zero"))
+    fractional = int(
+        sum(((frame[c] % 1) != 0).sum() for c in ("long_contracts", "short_contracts"))
+    )
+    if fractional:
+        issues.append(
+            Issue(
+                day,
+                "FRACTIONAL_CONTRACTS",
+                INFO,
+                fractional,
+                "non-whole counts in the source (kept exactly)",
+            )
+        )
     total = frame[frame["client_type"] == "TOTAL"].set_index("category")
     parts = (
         frame[frame["client_type"].isin(_PARTICIPANTS)]

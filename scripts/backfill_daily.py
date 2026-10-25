@@ -17,11 +17,12 @@ from collector.config import ConfigError, config_hash, load_config
 from collector.datasets.registry import DATASETS
 from collector.jobs.backfill_daily import run_dataset_backfill
 from collector.nse.client import NseClient
-from collector.nse.tradingdays import build_calendar
+from collector.nse.tradingdays import calendar_with_fallback
 from collector.quality.daily_report import build_dataset_report
 from collector.store.catalogue import Catalogue
 from collector.store.dataset_manifest import build_dataset_manifest
 from collector.store.layout import Layout
+from collector.store.manifest import silver_days
 
 log = logging.getLogger("backfill_daily")
 
@@ -55,7 +56,9 @@ def main() -> int:
     end = args.end or cfg.backfill.end_date or (today_ist() - timedelta(days=1))
     layout = Layout(cfg.paths.data_root)
     catalogue = Catalogue(layout.catalogue_path)
-    calendar = build_calendar(cfg.backfill.start_date, end, cfg.paths.nifty_candles_root)
+    calendar = calendar_with_fallback(
+        cfg.backfill.start_date, end, cfg.paths.nifty_candles_root, frozenset(silver_days(layout))
+    )
     client = NseClient(cfg.nse)
     names = list(DATASETS) if args.dataset == "all" else [args.dataset]
     failed = False
