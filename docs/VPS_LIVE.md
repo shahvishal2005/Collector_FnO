@@ -67,6 +67,20 @@ a minute). All of it is configurable in `live.capture` (config.example.yaml).
 - `logs\run_live_YYYYMMDD.log` has the details.
 - To force a re-run of a day already marked complete, delete `data\live_done\DATE.json`.
 
+## Updating the VPS from GitHub (Claude Code commands)
+The repository carries two project commands for the Claude Code session on the VPS (folder
+`.claude\commands\`). After the first `git pull` that brings them in, run them from the project folder:
+
+- `/vps-update` pulls the latest code safely: it refuses during market hours (08:30 to 15:45 on weekdays;
+  `/vps-update force` overrides), pulls fast-forward only, shows what changed, checks the local
+  `config\config.yaml` for drift (`scripts\check_config.py`) and fixes renamed settings minimally,
+  runs the quality gate and the data manifests, shows the scheduled task state, and reports what needs
+  you (for example an administrator step). It never reads `.env`, never places orders, and never discards local changes.
+- `/vps-status` is the read-only health report: live status verdict, scheduled task, log tail, disk space.
+
+Manual equivalent of `/vps-update`: `git pull --ff-only origin main`, then `scripts\check_config.py`,
+`scripts\run_all.py` and `scripts\check_manifest.py --dataset all`.
+
 ## Stopping and removing
 Stop for the day: `Stop-ScheduledTask -TaskName FnOCollector-Live`. Remove:
 `deploy\windows\uninstall_tasks.ps1` (elevated).

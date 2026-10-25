@@ -22,4 +22,6 @@
 - M3 daily datasets: participant OI and volume, F&O ban list, index close (generic backfill job,
   parsers, checks, manifests, reports; `scripts/backfill_daily.py`). The download client accepts
   plain-text files. Checks tuned on real data (participant sums within 2 contracts).
+- Claude Code commands for the VPS (`.claude/commands/vps-update.md`, `vps-status.md`) and a config
+  drift check (`scripts/check_config.py`).
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.
