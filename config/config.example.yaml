@@ -34,6 +34,25 @@ live:                              # Fyers market-data capture (read-only; never
     - {name: FINNIFTY, spot_symbol: "NSE:FINNIFTY-INDEX"}
     - {name: MIDCPNIFTY, spot_symbol: "NSE:MIDCPNIFTY-INDEX"}
     - {name: SENSEX, spot_symbol: "BSE:SENSEX-INDEX"}
+  allowed_hosts: []                # VPS only: put the VPS computer name here, e.g. ["MY-VPS-NAME"]
+  capture:                         # the live scheduler (all times IST; quote the times)
+    login_time: "08:45:00"         # log in and download contract lists before this time + a bit
+    capture_start: "09:15:00"
+    capture_end: "15:30:00"
+    tier1_interval_seconds: 60     # indices: one cycle per minute
+    tier2_interval_seconds: 300    # stocks: every 5 minutes (a multiple of the tier 1 interval)
+    tier1_strikecount: 25          # strikes each side of the money, indices
+    tier2_strikecount: 10          # strikes each side of the money, stocks
+    tier1_expiry_count: 3          # nearest expiries per index
+    tier2_expiry_count: 1          # nearest expiry per stock
+    tier2_file: data/reports/tier2_candidates.csv   # written by scripts/derive_tier2.py
+    tier2_limit: 40                # how many stocks from that file
+    min_call_gap_seconds: 0.25     # pause between API calls (polite)
+    rate_limit_backoff_seconds: 30 # wait after a rate-limit answer
+    max_consecutive_failed_cycles: 5   # stop (so a supervisor restarts us) after this many empty cycles
+    stale_after_seconds: 900       # a spot quote older than this means the market is closed
+    save_raw: true                 # keep every raw answer, compressed
+    holidays: []                   # optional extra no-trading days, e.g. ["2026-11-08"]
   probe_strike_counts: [3, 50]     # option-chain sizes tried on day 0
   probe_latency_calls: 10          # sequential calls used to measure latency
   probe_call_gap_seconds: 0.4      # pause between probe calls (polite)

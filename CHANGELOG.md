@@ -13,4 +13,7 @@
 - Full F&O backfill completed 2026-10-24 (2,225 days, 0 errors; see `docs/BACKFILL_RESULT.md`).
 - Downloads now have a total time limit (`nse.total_timeout_seconds`); stalled files are retried.
 - Quality checks tuned from real data: universe floor 100; settlement-close quirk reported as info.
+- Live option-chain scheduler for the VPS (M5): one cycle per minute for indices, stocks every five
+  minutes, restart-safe time grid, single-instance lock, host guard, health logs, status file,
+  Windows Task Scheduler install script. See `docs/VPS_LIVE.md`.
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

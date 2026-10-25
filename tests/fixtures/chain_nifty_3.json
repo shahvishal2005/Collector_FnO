@@ -1,0 +1,358 @@
+{
+ "code": 200,
+ "data": {
+  "callOi": 267687940,
+  "expiryData": [
+   {
+    "date": "27-10-2026",
+    "expiry": "1793095800",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "03-11-2026",
+    "expiry": "1793700600",
+    "expiry_flag": "W"
+   },
+   {
+    "date": "09-11-2026",
+    "expiry": "1794219000",
+    "expiry_flag": "W"
+   },
+   {
+    "date": "17-11-2026",
+    "expiry": "1794910200",
+    "expiry_flag": "W"
+   },
+   {
+    "date": "23-11-2026",
+    "expiry": "1795428600",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "01-12-2026",
+    "expiry": "1796119800",
+    "expiry_flag": "W"
+   },
+   {
+    "date": "29-12-2026",
+    "expiry": "1798539000",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "30-03-2027",
+    "expiry": "1806401400",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "29-06-2027",
+    "expiry": "1814263800",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "28-09-2027",
+    "expiry": "1822126200",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "28-12-2027",
+    "expiry": "1829988600",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "27-06-2028",
+    "expiry": "1845713400",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "26-12-2028",
+    "expiry": "1861438200",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "26-06-2029",
+    "expiry": "1877163000",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "24-12-2029",
+    "expiry": "1892801400",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "25-06-2030",
+    "expiry": "1908612600",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "31-12-2030",
+    "expiry": "1924942200",
+    "expiry_flag": "M"
+   },
+   {
+    "date": "24-06-2031",
+    "expiry": "1940062200",
+    "expiry_flag": "M"
+   }
+  ],
+  "indiavixData": {
+   "ask": 0,
+   "bid": 0,
+   "description": "INDIAVIX-INDEX",
+   "ex_symbol": "INDIAVIX",
+   "exchange": "NSE",
+   "fyToken": "101000000026017",
+   "ltp": 16.86,
+   "ltpch": 1.1,
+   "ltpchp": 6.98,
+   "option_type": "",
+   "strike_price": -1,
+   "symbol": "NSE:INDIAVIX-INDEX"
+  },
+  "optionsChain": [
+   {
+    "ask": 0,
+    "bid": 0,
+    "description": "NIFTY50-INDEX",
+    "ex_symbol": "NIFTY",
+    "exchange": "NSE",
+    "fp": 22589,
+    "fpch": -122.3,
+    "fpchp": -0.54,
+    "fyToken": "101000000026000",
+    "ltp": 22600,
+    "ltpch": -87.65,
+    "ltpchp": -0.39,
+    "option_type": "",
+    "strike_price": -1,
+    "symbol": "NSE:NIFTY50-INDEX"
+   },
+   {
+    "ask": 78.85,
+    "bid": 77.2,
+    "fyToken": "101126102751329",
+    "ltp": 76.2,
+    "ltpch": 16.9,
+    "ltpchp": 28.5,
+    "oi": 3469765,
+    "oich": 1460165,
+    "oichp": 72.66,
+    "option_type": "PE",
+    "prev_oi": 2009600,
+    "strike_price": 22450,
+    "symbol": "NSE:NIFTY26OCT22450PE",
+    "volume": 322159500
+   },
+   {
+    "ask": 225,
+    "bid": 220.6,
+    "fyToken": "101126102751328",
+    "ltp": 224.85,
+    "ltpch": -95.6,
+    "ltpchp": -29.83,
+    "oi": 1551290,
+    "oich": 1306370,
+    "oichp": 533.39,
+    "option_type": "CE",
+    "prev_oi": 244920,
+    "strike_price": 22450,
+    "symbol": "NSE:NIFTY26OCT22450CE",
+    "volume": 113391200
+   },
+   {
+    "ask": 95,
+    "bid": 94.3,
+    "fyToken": "101126102751331",
+    "ltp": 95,
+    "ltpch": 22.95,
+    "ltpchp": 31.85,
+    "oi": 12274145,
+    "oich": 3019055,
+    "oichp": 32.62,
+    "option_type": "PE",
+    "prev_oi": 9255090,
+    "strike_price": 22500,
+    "symbol": "NSE:NIFTY26OCT22500PE",
+    "volume": 592236190
+   },
+   {
+    "ask": 190.7,
+    "bid": 188.05,
+    "fyToken": "101126102751330",
+    "ltp": 190,
+    "ltpch": -91.05,
+    "ltpchp": -32.4,
+    "oi": 8474245,
+    "oich": 5489835,
+    "oichp": 183.95,
+    "option_type": "CE",
+    "prev_oi": 2984410,
+    "strike_price": 22500,
+    "symbol": "NSE:NIFTY26OCT22500CE",
+    "volume": 286735410
+   },
+   {
+    "ask": 116.6,
+    "bid": 115.05,
+    "fyToken": "101126102751333",
+    "ltp": 115.05,
+    "ltpch": 28.5,
+    "ltpchp": 32.93,
+    "oi": 2537990,
+    "oich": -648050,
+    "oichp": -20.34,
+    "option_type": "PE",
+    "prev_oi": 3186040,
+    "strike_price": 22550,
+    "symbol": "NSE:NIFTY26OCT22550PE",
+    "volume": 245494860
+   },
+   {
+    "ask": 161.65,
+    "bid": 157.35,
+    "fyToken": "101126102751332",
+    "ltp": 157,
+    "ltpch": -87.15,
+    "ltpchp": -35.7,
+    "oi": 2774460,
+    "oich": 1968980,
+    "oichp": 244.45,
+    "option_type": "CE",
+    "prev_oi": 805480,
+    "strike_price": 22550,
+    "symbol": "NSE:NIFTY26OCT22550CE",
+    "volume": 168326405
+   },
+   {
+    "ask": 139.65,
+    "bid": 137.2,
+    "fyToken": "101126102751337",
+    "ltp": 137.65,
+    "ltpch": 34.7,
+    "ltpchp": 33.71,
+    "oi": 6383650,
+    "oich": -2192130,
+    "oichp": -25.56,
+    "option_type": "PE",
+    "prev_oi": 8575780,
+    "strike_price": 22600,
+    "symbol": "NSE:NIFTY26OCT22600PE",
+    "volume": 293246980
+   },
+   {
+    "ask": 134.05,
+    "bid": 132.45,
+    "fyToken": "101126102751334",
+    "ltp": 132.45,
+    "ltpch": -80.35,
+    "ltpchp": -37.76,
+    "oi": 5737875,
+    "oich": 1926405,
+    "oichp": 50.54,
+    "option_type": "CE",
+    "prev_oi": 3811470,
+    "strike_price": 22600,
+    "symbol": "NSE:NIFTY26OCT22600CE",
+    "volume": 259727780
+   },
+   {
+    "ask": 167,
+    "bid": 163,
+    "fyToken": "101126102751339",
+    "ltp": 167.2,
+    "ltpch": 44.35,
+    "ltpchp": 36.1,
+    "oi": 1551680,
+    "oich": -2103460,
+    "oichp": -57.55,
+    "option_type": "PE",
+    "prev_oi": 3655140,
+    "strike_price": 22650,
+    "symbol": "NSE:NIFTY26OCT22650PE",
+    "volume": 137330115
+   },
+   {
+    "ask": 110.85,
+    "bid": 108.8,
+    "fyToken": "101126102751338",
+    "ltp": 110.9,
+    "ltpch": -71.25,
+    "ltpchp": -39.12,
+    "oi": 2929420,
+    "oich": 859360,
+    "oichp": 41.51,
+    "option_type": "CE",
+    "prev_oi": 2070060,
+    "strike_price": 22650,
+    "symbol": "NSE:NIFTY26OCT22650CE",
+    "volume": 159177265
+   },
+   {
+    "ask": 194.8,
+    "bid": 190.05,
+    "fyToken": "101126102751341",
+    "ltp": 190.15,
+    "ltpch": 45.2,
+    "ltpchp": 31.18,
+    "oi": 5156450,
+    "oich": -2210330,
+    "oichp": -30,
+    "option_type": "PE",
+    "prev_oi": 7366780,
+    "strike_price": 22700,
+    "symbol": "NSE:NIFTY26OCT22700PE",
+    "volume": 225772560
+   },
+   {
+    "ask": 89.95,
+    "bid": 88.1,
+    "fyToken": "101126102751340",
+    "ltp": 88.8,
+    "ltpch": -66.4,
+    "ltpchp": -42.78,
+    "oi": 9991605,
+    "oich": 3902015,
+    "oichp": 64.08,
+    "option_type": "CE",
+    "prev_oi": 6089590,
+    "strike_price": 22700,
+    "symbol": "NSE:NIFTY26OCT22700CE",
+    "volume": 323104275
+   },
+   {
+    "ask": 228,
+    "bid": 223.25,
+    "fyToken": "101126102751343",
+    "ltp": 228,
+    "ltpch": 58.55,
+    "ltpchp": 34.55,
+    "oi": 1462890,
+    "oich": -685750,
+    "oichp": -31.92,
+    "option_type": "PE",
+    "prev_oi": 2148640,
+    "strike_price": 22750,
+    "symbol": "NSE:NIFTY26OCT22750PE",
+    "volume": 101272340
+   },
+   {
+    "ask": 72.6,
+    "bid": 70.8,
+    "fyToken": "101126102751342",
+    "ltp": 70.95,
+    "ltpch": -59.35,
+    "ltpchp": -45.55,
+    "oi": 3441815,
+    "oich": 267795,
+    "oichp": 8.44,
+    "option_type": "CE",
+    "prev_oi": 3174020,
+    "strike_price": 22750,
+    "symbol": "NSE:NIFTY26OCT22750CE",
+    "volume": 199555265
+   }
+  ],
+  "putOi": 198362515
+ },
+ "message": "",
+ "s": "ok"
+}

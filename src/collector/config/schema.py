@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, time
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -95,9 +95,44 @@ def _default_symbol_masters() -> dict[str, str]:
     }
 
 
+class CaptureConfig(_Strict):
+    """How the live option-chain scheduler behaves during a trading day (all times are IST)."""
+
+    login_time: time = time(8, 45)
+    capture_start: time = time(9, 15)
+    capture_end: time = time(15, 30)
+    tier1_interval_seconds: int = Field(default=60, ge=10)
+    tier2_interval_seconds: int = Field(default=300, ge=10)
+    tier1_strikecount: int = Field(default=25, ge=1)  # strikes captured each side of the money
+    tier2_strikecount: int = Field(default=10, ge=1)
+    tier1_expiry_count: int = Field(default=3, ge=1)  # nearest expiries captured
+    tier2_expiry_count: int = Field(default=1, ge=1)
+    tier2_file: Path = Path("data/reports/tier2_candidates.csv")
+    tier2_limit: int = Field(default=40, ge=0)
+    min_call_gap_seconds: float = Field(default=0.25, ge=0.0)  # politeness between API calls
+    rate_limit_backoff_seconds: float = Field(default=30.0, ge=0.0)
+    max_consecutive_failed_cycles: int = Field(default=5, ge=1)
+    stale_after_seconds: int = Field(default=900, ge=60)  # spot quote older than this = closed
+    save_raw: bool = True  # keep every raw API answer (compressed) in bronze
+    holidays: list[date] = Field(default_factory=list)  # extra no-trading days (optional)
+
+    @model_validator(mode="after")
+    def _check_intervals(self) -> CaptureConfig:
+        """Tier 2 cycles must be a whole multiple of Tier 1 cycles; the window must make sense."""
+        if self.tier2_interval_seconds % self.tier1_interval_seconds != 0:
+            raise ValueError("tier2_interval_seconds must be a multiple of tier1_interval_seconds")
+        if not self.login_time < self.capture_start < self.capture_end:
+            raise ValueError("need login_time < capture_start < capture_end")
+        return self
+
+
 class LiveConfig(_Strict):
     """Settings for the Fyers live capture and its day-0 probe (read-only market data only)."""
 
+    capture: CaptureConfig = Field(default_factory=CaptureConfig)
+    # The scheduler refuses to run on any other computer (so the laptop cannot compete with the VPS
+    # for the same Fyers rate limit). Empty list = allowed anywhere (tests, one-off checks).
+    allowed_hosts: list[str] = Field(default_factory=list)
     tier1: list[Tier1Underlying] = Field(default_factory=_default_tier1)
     token_path: Path = Path("access_token.txt")
     sdk_log_dir: Path = Path("logs/fyers_sdk")

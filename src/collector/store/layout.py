@@ -58,3 +58,40 @@ class Layout:
     def reports_root(self) -> Path:
         """Folder with generated reports."""
         return self.root / "reports"
+
+    # ---- live capture (Fyers) ----
+    def chain_raw_file(self, day: date, cycle_label: str) -> Path:
+        """Raw option-chain answers of one cycle (compressed JSON lines)."""
+        return (
+            self.root / "bronze" / "fyers_chain" / f"trade_date={day.isoformat()}"
+            / f"cycle_{cycle_label}.jsonl.gz"
+        )  # fmt: skip
+
+    def chain_silver_file(self, day: date, cycle_label: str) -> Path:
+        """Normalised option-chain rows of one cycle."""
+        return (
+            self.root / "silver" / "option_chain" / f"trade_date={day.isoformat()}"
+            / f"cycle_{cycle_label}.parquet"
+        )  # fmt: skip
+
+    def chain_silver_dir(self, day: date) -> Path:
+        """Folder with all cycles of one day."""
+        return self.root / "silver" / "option_chain" / f"trade_date={day.isoformat()}"
+
+    def live_health_dir(self, day: date) -> Path:
+        """Folder with the cycle and call health logs of one day."""
+        return self.root / "silver" / "live_health" / f"trade_date={day.isoformat()}"
+
+    def contract_master_file(self, day: date) -> Path:
+        """The day's contract list (symbols, lot sizes, expiries) as Parquet."""
+        return (
+            self.root / "silver" / "contract_master" / f"trade_date={day.isoformat()}"
+            / "contracts.parquet"
+        )  # fmt: skip
+
+    def contract_master_raw(self, day: date, label: str) -> Path:
+        """The raw symbol-master file as downloaded (compressed)."""
+        return (
+            self.root / "bronze" / "fyers_symbol_master" / f"trade_date={day.isoformat()}"
+            / f"{label}.csv.gz"
+        )  # fmt: skip

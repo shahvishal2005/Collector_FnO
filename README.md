@@ -5,8 +5,8 @@ Market-data collector for Indian F&O. Personal research use.
 - **Pipeline A (built and run): NSE archive backfill.** 2,225 trading days, 2017-10-24 to 2026-10-23. Downloads the exchange's public end-of-day F&O
   files (futures and options on indices and stocks, with open interest), keeps the raw files,
   and writes clean, versioned Parquet tables with a manifest and a quality report.
-- **Pipeline B (designed, not built): live Fyers capture.** Option-chain, OI and futures snapshots
-  during market hours. See `docs/PILOT_DESIGN.md`.
+- **Pipeline B (built, awaiting its first trading day): live Fyers option-chain capture,** run on the
+  VPS by Windows Task Scheduler. See `docs/VPS_LIVE.md` (set-up) and `docs/PILOT_DESIGN.md` (goals).
 
 This project **never places orders**. A test (`tests/test_no_order_api.py`) fails if order-related
 calls ever appear in the code. It only reads data. It is separate from the research platform
@@ -36,6 +36,8 @@ brand-new package builds.)
 | Rebuild the clean tables from the raw files (no network) | `python scripts\backfill_fo.py --reprocess` |
 | Rebuild manifest and report only | `python scripts\report_fo.py` |
 | Prove the data matches its manifest | `python scripts\check_manifest.py` |
+| Live capture for today (VPS; started by Task Scheduler) | `python scripts\run_live.py` |
+| Check how the live capture is doing | `python scripts\live_status.py` |
 | Propose the Tier 2 stock list from stored option data | `python scripts\derive_tier2.py` |
 | Quality gate (run after every change) | `python scripts\run_all.py` |
 
