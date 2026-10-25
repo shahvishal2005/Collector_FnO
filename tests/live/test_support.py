@@ -111,3 +111,17 @@ def test_market_check_fails_open() -> None:
     assert market_has_traded_today(_History({"s": "error", "code": -300}), "S", today) is None
     assert market_has_traded_today(_History(RuntimeError("x")), "S", today) is None
     assert market_has_traded_today(_History("odd"), "S", today) is None
+
+
+def test_done_marker_roundtrip(tmp_path: Path) -> None:
+    from collector.live.status import is_done, write_done
+
+    day = date(2026, 10, 26)
+    assert not is_done(tmp_path, day)
+    write_done(
+        tmp_path,
+        day,
+        {"cycles": 376, "reason": "capture window finished"},
+        ist(2026, 10, 26, 15, 31),
+    )
+    assert is_done(tmp_path, day) and not is_done(tmp_path, date(2026, 10, 27))

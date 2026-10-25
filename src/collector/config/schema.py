@@ -112,7 +112,7 @@ class CaptureConfig(_Strict):
     min_call_gap_seconds: float = Field(default=0.25, ge=0.0)  # politeness between API calls
     rate_limit_backoff_seconds: float = Field(default=30.0, ge=0.0)
     max_consecutive_failed_cycles: int = Field(default=5, ge=1)
-    stale_after_seconds: int = Field(default=900, ge=60)  # spot quote older than this = closed
+    market_check_slots: int = Field(default=10, ge=1)  # no-candle checks before 'holiday'
     save_raw: bool = True  # keep every raw API answer (compressed) in bronze
     holidays: list[date] = Field(default_factory=list)  # extra no-trading days (optional)
 

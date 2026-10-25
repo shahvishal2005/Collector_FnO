@@ -32,6 +32,7 @@ from collector.live.host import host_allowed
 from collector.live.lock import InstanceLock, LockHeld
 from collector.live.market import market_has_traded_today
 from collector.live.runner import RunOptions, run_day
+from collector.live.status import is_done, write_done
 from collector.live.targets import build_targets, load_tier2_names
 from collector.normalise.contract_master import CONTRACT_MASTER_SCHEMA, parse_symbol_master
 from collector.store.layout import Layout
@@ -70,6 +71,10 @@ def main() -> int:
     today = today_ist()
     clock = SystemClock()
     holder: dict[str, Any] = {}
+    real_day = not args.test and not args.ignore_hours
+    if real_day and is_done(data_root, today):
+        log.info("today's capture is already complete; nothing to do")
+        return 0
 
     def login(force: bool) -> None:
         """Log in (reusing a valid token unless forced) and keep the client."""
@@ -84,6 +89,9 @@ def main() -> int:
         """Log in and save today's contract list (the list is nice to have; login is essential)."""
         login(False)
         for label, url in cfg.live.symbol_master_urls.items():
+            target = layout.contract_master_file(today).with_name(f"contracts_{label}.parquet")
+            if target.is_file():
+                continue  # already saved today (a restart); do not download it again
             try:
                 response = requests.get(url, timeout=60)
                 response.raise_for_status()
@@ -91,8 +99,7 @@ def main() -> int:
                     layout.contract_master_raw(today, label), gzip.compress(response.content)
                 )
                 frame = parse_symbol_master(response.text, label)
-                path = layout.contract_master_file(today).with_name(f"contracts_{label}.parquet")
-                write_table(frame, CONTRACT_MASTER_SCHEMA, path)
+                write_table(frame, CONTRACT_MASTER_SCHEMA, target)
                 log.info("contract master %s: %d contracts", label, len(frame))
             except (requests.RequestException, OSError) as exc:
                 log.warning("contract master %s not saved (%s)", label, type(exc).__name__)
@@ -121,6 +128,10 @@ def main() -> int:
         log.error("login failed: %s", exc)
         return 1
     log.info("finished: %s", summary)
+    if real_day and not summary.aborted:
+        write_done(
+            data_root, today, {"cycles": summary.cycles, "reason": summary.reason}, clock.now()
+        )
     return 1 if summary.aborted else 0
 
 

@@ -50,7 +50,7 @@ live:                              # Fyers market-data capture (read-only; never
     min_call_gap_seconds: 0.25     # pause between API calls (polite)
     rate_limit_backoff_seconds: 30 # wait after a rate-limit answer
     max_consecutive_failed_cycles: 5   # stop (so a supervisor restarts us) after this many empty cycles
-    stale_after_seconds: 900       # a spot quote older than this means the market is closed
+    market_check_slots: 10         # slots (minutes) with no spot candles before calling it a holiday
     save_raw: true                 # keep every raw answer, compressed
     holidays: []                   # optional extra no-trading days, e.g. ["2026-11-08"]
   probe_strike_counts: [3, 50]     # option-chain sizes tried on day 0

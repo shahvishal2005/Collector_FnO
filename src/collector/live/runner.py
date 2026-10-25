@@ -8,7 +8,7 @@ Behaviour that matters in practice:
   next slot on the same time grid, so Tier 2 timing stays consistent; after the close it exits.
 - Slots missed because a cycle ran long are skipped (and counted), never queued up.
 - A weekend or a configured holiday ends the run at once; a weekday where the spot has no candles
-  at the open (checked up to three times) is treated as a market holiday.
+  at the open (checked for `market_check_slots` minutes) is treated as a market holiday.
 - Repeated empty cycles abort the run with exit code 1 so Windows Task Scheduler restarts it.
 """
 
@@ -28,7 +28,6 @@ from collector.live.status import Status, write_status
 from collector.live.targets import Target
 
 log = logging.getLogger(__name__)
-_MARKET_CHECKS = 3
 
 
 @dataclass
@@ -145,8 +144,10 @@ def run_day(
             traded = check_market()
             if traded is False:
                 closed_checks += 1
-                log.warning("no candles for today yet (%d/%d)", closed_checks, _MARKET_CHECKS)
-                if closed_checks >= _MARKET_CHECKS:
+                log.warning(
+                    "no candles for today yet (%d/%d)", closed_checks, cfg.market_check_slots
+                )
+                if closed_checks >= cfg.market_check_slots:
                     summary.reason = "market closed (no candles today)"
                     break
                 slot += interval

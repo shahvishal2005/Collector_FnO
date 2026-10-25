@@ -16,4 +16,7 @@
 - Live option-chain scheduler for the VPS (M5): one cycle per minute for indices, stocks every five
   minutes, restart-safe time grid, single-instance lock, host guard, health logs, status file,
   Windows Task Scheduler install script. See `docs/VPS_LIVE.md`.
+- Live scheduler hardening after the first VPS test: 10-minute holiday check (`market_check_slots`),
+  day-complete marker, contract lists downloaded once a day, 5-minute relaunch in Task Scheduler,
+  status verdict judged against the run's own span (late start, stall and early stop are reported).
 - Docs: README, SCHEMAS, RUNBOOK, PILOT_DESIGN, decision 0001.

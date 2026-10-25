@@ -6,14 +6,15 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import date, datetime, timedelta
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
-from collector.common.timeutil import IST, now_ist, today_ist
+from collector.common.timeutil import now_ist, today_ist
 from collector.config import ConfigError, load_config
 from collector.live.status import read_status
+from collector.live.verdict import judge_day
 from collector.store.layout import Layout
 
 
@@ -51,11 +52,14 @@ def main() -> int:
     cycles = pd.read_csv(cycles_file)
     calls = pd.read_csv(calls_file)
     cap = cfg.live.capture
-    first = datetime.combine(day, cap.capture_start, tzinfo=IST)
-    last = datetime.combine(day, cap.capture_end, tzinfo=IST)
-    horizon = min(now_ist(), last) if day == today_ist() else last
-    expected = max(0, int((horizon - first) // timedelta(seconds=cap.tier1_interval_seconds)) + 1)
-    print(f"cycles recorded: {len(cycles)} (about {expected} expected by now)")
+    state = str(status["state"]) if status else "unknown"
+    test_run = args.test or (
+        status is not None and status.get("reason") == "reached the cycle limit"
+    )
+    verdict = judge_day(
+        cycles, calls, state=state, now=now_ist(), cap=cap, day=day, real_day=not test_run
+    )
+    print(f"cycles recorded: {verdict.recorded} (about {verdict.expected} expected so far)")
     n_failed = int((~calls["ok"]).sum())
     print(f"calls: {len(calls)}, failed: {n_failed}, rows stored: {int(cycles['rows'].sum())}")
     failed = calls[~calls["ok"]]
@@ -68,9 +72,13 @@ def main() -> int:
     print(f"rate-limit answers: {limits}, skipped slots: {skipped}")
     files = len(list(layout.chain_silver_dir(day).glob("cycle_*.parquet")))
     print(f"chain files stored: {files}")
-    healthy = len(cycles) >= 0.9 * expected and not (len(failed) > 0.05 * max(1, len(calls)))
-    print("verdict:", "OK" if healthy else "CHECK (missing cycles or many failures)")
-    return 0 if healthy else 1
+    if verdict.healthy:
+        print("verdict: OK")
+        return 0
+    print("verdict: CHECK")
+    for problem in verdict.problems:
+        print(" -", problem)
+    return 1
 
 
 if __name__ == "__main__":

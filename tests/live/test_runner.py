@@ -111,9 +111,20 @@ def test_weekend_holiday_and_late_start_end_the_run_quickly(tmp_path: Path) -> N
     assert late.cycles == 0 and "after the capture window" in late.reason
 
 
-def test_a_market_with_no_candles_is_treated_as_closed_after_three_checks(tmp_path: Path) -> None:
+def test_a_market_with_no_candles_is_treated_as_closed_after_the_checks(tmp_path: Path) -> None:
     summary, _, _, client = _run(tmp_path, ist(2026, 10, 26, 8, 0), check=lambda: False)
     assert summary.cycles == 0 and "market closed" in summary.reason and client.calls == []
+    patient = capture_config(market_check_slots=3)
+    quick, _, _, _ = _run(tmp_path / "q", ist(2026, 10, 26, 8, 0), cfg=patient, check=lambda: False)
+    assert quick.cycles == 0 and "market closed" in quick.reason
+    seen: list[int] = []
+
+    def counting() -> bool:
+        seen.append(1)
+        return False
+
+    _run(tmp_path / "c", ist(2026, 10, 26, 8, 0), cfg=patient, check=counting)
+    assert len(seen) == 3  # exactly market_check_slots checks, then it gives up
     unknown, _, _, _ = _run(tmp_path / "u", ist(2026, 10, 26, 8, 0), check=lambda: None)
     assert unknown.cycles == 31  # an unknown answer never stops the day
 
